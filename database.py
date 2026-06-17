@@ -7,7 +7,7 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
-        db.row_factory = sqlite3.Row  
+        db.row_factory = sqlite3.Row
     return db
 
 def close_db(exception):
@@ -24,9 +24,10 @@ def init_db():
             nome TEXT NOT NULL,
             telefone TEXT,
             email TEXT,
+            favorito INTEGER DEFAULT 0,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
     conn.commit()
     conn.close()
-    print("Banco de dados criado com sucesso!")
+    print("Banco de dados iniciado com sucesso!")
