@@ -30,6 +30,21 @@ def criar():
     db.commit()
     return jsonify({'mensagem': 'Contato criado com sucesso!'}), 201
 
+@app.route('/contatos/<int:id>', methods=['PUT'])
+def atualizar(id):
+    db = get_db()
+    contato = db.execute('SELECT * FROM contatos WHERE id = ?', (id,)).fetchone()
+    if not contato:
+        return jsonify({'erro': 'Contato não encontrado'}), 404
+    dados = request.get_json()
+    nome = dados.get('nome', contato['nome'])
+    telefone = dados.get('telefone', contato['telefone'])
+    email = dados.get('email', contato['email'])
+    db.execute('UPDATE contatos SET nome = ?, telefone = ?, email = ? WHERE id = ?',
+               (nome, telefone, email, id))
+    db.commit()
+    return jsonify({'mensagem': 'Contato atualizado com sucesso!'})
+
 @app.route('/contatos/<int:id>', methods=['DELETE'])
 def deletar(id):
     db = get_db()
