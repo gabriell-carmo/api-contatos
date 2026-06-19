@@ -8,7 +8,22 @@ app.teardown_appcontext(close_db)
 @app.route('/contatos', methods=['GET'])
 def listar():
     db = get_db()
-    contatos = db.execute('SELECT * FROM contatos').fetchall()
+    nome = request.args.get('nome', '')
+    pagina = int(request.args.get('pagina', 1))
+    por_pagina = int(request.args.get('por_pagina', 5))
+    offset = (pagina - 1) * por_pagina
+
+    if nome:
+        contatos = db.execute(
+            'SELECT * FROM contatos WHERE nome LIKE ? LIMIT ? OFFSET ?',
+            (f'%{nome}%', por_pagina, offset)
+        ).fetchall()
+    else:
+        contatos = db.execute(
+            'SELECT * FROM contatos LIMIT ? OFFSET ?',
+            (por_pagina, offset)
+        ).fetchall()
+
     return jsonify([dict(c) for c in contatos])
 
 @app.route('/contatos/<int:id>', methods=['GET'])
